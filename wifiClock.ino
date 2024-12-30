@@ -105,8 +105,8 @@ void displayDateTime()
   char timeBuf[16], dateBuf[16];
   if(!getLocalTime(&timeinfo)){
     Serial.println("Failed to obtain time");
-    strcpy(timeBuf, "Time Err");
-    strcpy(dateBuf, "Date Err");
+    strcpy(timeBuf, "Loading time");
+    strcpy(dateBuf, "");
   }else{
     //strftime(timeBuf, sizeof(buf), "%H:%M:%S", &timeinfo);
     strftime(timeBuf, sizeof(timeBuf), "%I:%M:%S %p", &timeinfo);  
