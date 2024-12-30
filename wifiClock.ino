@@ -31,11 +31,11 @@ void setup(void)
   Serial.begin(115200);
   initLEDMatrix();
   if(P.displayAnimate()) {
-    P.displayZoneText(1, "Wifi Con...", PA_CENTER, 0, 0, PA_NO_EFFECT, PA_NO_EFFECT);   
+    P.displayZoneText(1, "Con... Wifi", PA_CENTER, 0, 0, PA_NO_EFFECT, PA_NO_EFFECT);
   }
   connectWifi();
   if(P.displayAnimate()) {
-    P.displayZoneText(1, "Wifi OK", PA_CENTER, 0, 0, PA_NO_EFFECT, PA_NO_EFFECT);   
+    P.displayZoneText(1, "Wifi OK", PA_CENTER, 0, 0, PA_NO_EFFECT, PA_NO_EFFECT);
   }  
   syncNTPTime();
   //displayDateTime();
@@ -124,7 +124,8 @@ void displayDateTime()
 
 String lastTime = "";
 String lastDate = "";
-void updateDisplay(char* timeBuf, char* dateBuf) {
+void updateDisplay(char* timeBuf, char* dateBuf)
+{
   String currentTime = String(timeBuf);
   String currentDate = String(dateBuf);
 
