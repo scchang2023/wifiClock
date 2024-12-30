@@ -30,7 +30,13 @@ void setup(void)
 {
   Serial.begin(115200);
   initLEDMatrix();
+  if(P.displayAnimate()) {
+    P.displayZoneText(1, "Wifi Con...", PA_CENTER, 0, 0, PA_NO_EFFECT, PA_NO_EFFECT);   
+  }
   connectWifi();
+  if(P.displayAnimate()) {
+    P.displayZoneText(1, "Wifi OK", PA_CENTER, 0, 0, PA_NO_EFFECT, PA_NO_EFFECT);   
+  }  
   syncNTPTime();
   //displayDateTime();
   t.every(1000, displayDateTime);
@@ -52,7 +58,6 @@ void loop(void)
 void initLEDMatrix()
 {
   P.begin(2);
-  P.setIntensity(12);/*0~15*/
   int endPart1 = (MAX_DEVICES/2);
   P.setZone(0, 0, endPart1-1);  //區域 0 控制第 0 到 3 號模組
   P.setZone(1, endPart1, MAX_DEVICES-1);  //區域 1 控制第 8 到 15 號模組
@@ -67,6 +72,7 @@ void connectWifi()
   Serial.println(ssid);
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
+  
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
@@ -93,39 +99,41 @@ void printLocalTime()
   Serial.println("*****************************************************");
 }
 
-String lastTime = "";
-String lastDate = "";
 void displayDateTime()
 {
   struct tm timeinfo;
-  char timeBuf[64], dateBuf[16];
+  char timeBuf[16], dateBuf[16];
   if(!getLocalTime(&timeinfo)){
     Serial.println("Failed to obtain time");
-    strcpy(timeBuf, "NA");
-    strcpy(dateBuf, "NA");
+    strcpy(timeBuf, "Time Err");
+    strcpy(dateBuf, "Date Err");
   }else{
     //strftime(timeBuf, sizeof(buf), "%H:%M:%S", &timeinfo);
     strftime(timeBuf, sizeof(timeBuf), "%I:%M:%S %p", &timeinfo);  
-    strftime(dateBuf, sizeof(dateBuf), "%m-%d %a", &timeinfo);
-    Serial.println(timeBuf);
-    Serial.println(dateBuf);
+    strftime(dateBuf, sizeof(dateBuf), "%m-%d %a", &timeinfo);  
   }
+  Serial.println(timeBuf);
+  Serial.println(dateBuf);  
   String currentTime = String(timeBuf);
   String currentDate = String(dateBuf);
-  if(currentTime != lastTime) {
-    if(P.displayAnimate()){
-      P.displayZoneText(1, timeBuf, PA_CENTER, 0, 0, PA_NO_EFFECT, PA_NO_EFFECT);
-    }
+
+  if(P.displayAnimate()) {
+    updateDisplay(timeBuf, dateBuf);    
+  }
+}
+
+String lastTime = "";
+String lastDate = "";
+void updateDisplay(char* timeBuf, char* dateBuf) {
+  String currentTime = String(timeBuf);
+  String currentDate = String(dateBuf);
+
+  if (currentTime != lastTime) {
+    P.displayZoneText(1, timeBuf, PA_CENTER, 0, 0, PA_NO_EFFECT, PA_NO_EFFECT);
     lastTime = currentTime;
   }
   if (currentDate != lastDate) {
-    if (P.displayAnimate()){
-      P.displayZoneText(0, dateBuf, PA_CENTER, 0, 0, PA_NO_EFFECT, PA_NO_EFFECT);
-    }
+    P.displayZoneText(0, dateBuf, PA_CENTER, 0, 0, PA_NO_EFFECT, PA_NO_EFFECT);
     lastDate = currentDate;
-  }  
-  // if (P.displayAnimate()){
-  //   P.displayZoneText(1, timeBuf, PA_CENTER, 0, 0, PA_NO_EFFECT, PA_NO_EFFECT);
-  //   P.displayZoneText(0, dateBuf, PA_CENTER, 0, 0, PA_NO_EFFECT, PA_NO_EFFECT);
-  // }
+  }
 }
